@@ -13,7 +13,7 @@
 | macOS Apple Silicon | `mac-arm64.dmg` 或 `mac-arm64.zip` |
 | macOS Intel | `mac-x64.dmg` 或 `mac-x64.zip` |
 | Windows x64 | `win-x64.exe` 安装器或 `win-x64.zip` |
-| Linux x64 | `linux-x64.AppImage` 或 `linux-x64.deb` |
+| Linux x64 | `linux-x86_64.AppImage` 或 `linux-amd64.deb` |
 
 完整文件名带版本号。macOS 将应用拖入「应用程序」；Windows 运行安装器；Linux 按发行版方式安装 deb，或给 AppImage 可执行权限后运行。当前发行包没有商业代码签名或 Apple 公证，系统可能要求手动确认来源。只从本仓库下载并核对 SHA-256；不需要关闭系统安全功能。
 
