@@ -12,7 +12,7 @@ scripts without a separate product discussion.
 The desktop test creates an isolated temporary profile and tests the real Electron
 runtime, native bridge, backup compatibility and restart persistence. It does not
 access your normal application library or browser profile. It writes a screenshot
-to `docs/images/desktop.png`; include it only when intentionally updating the UI.
+to `artifacts/desktop.png`; copy it to `docs/images/desktop.png` only when intentionally updating the UI.
 
 Never expose generic filesystem, shell or IPC access through preload. New external
 URLs, catalog parameters or assets must be reviewed in `desktop/policy.mjs` and

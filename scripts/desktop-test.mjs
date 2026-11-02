@@ -29,6 +29,7 @@ try {
   await page.locator('.video-card').first().locator('[data-save]').click();
   await page.waitForFunction(()=>document.querySelector('#later-count').textContent==='1');
   await page.locator('[data-page="later"]').click();
+  await page.waitForFunction(()=>document.querySelector('#collection-title').textContent==='我的待看清单');
   assert.equal(await page.locator('.video-card').count(),1);
   await page.locator('.video-card .thumbnail').click();
   await page.locator('[data-like]').click();
@@ -74,9 +75,8 @@ try {
   await page.reload();
   await page.locator('.video-card').first().waitFor();
   await page.waitForFunction(()=>document.querySelector('.hero-picture img')?.complete,{},{timeout:20000}).catch(()=>{});
-  await mkdir('docs/images',{recursive:true});
-  await page.screenshot({path:'docs/images/desktop.png'});
   await mkdir('artifacts',{recursive:true});
+  await page.screenshot({path:'artifacts/desktop.png'});
   await writeFile('artifacts/desktop-test.json',JSON.stringify({runtime:process.env.HACKERTUBE_TEST_EXECUTABLE?'packaged':'development',passed:results},null,2));
   console.log(`Desktop smoke test: ${results.length} checks passed.`);
 } finally {if(app)await app.close();await rm(temp,{recursive:true,force:true});}
