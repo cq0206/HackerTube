@@ -1,0 +1,40 @@
+{
+  "name": "hackertube-desktop",
+  "version": "1.1.0",
+  "description": "A local-first cinema for videos recommended by Hacker News",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.mjs",
+  "license": "MIT",
+  "author": "HackerTube contributors",
+  "repository": {"type": "git", "url": "git+https://github.com/cq0206/HackerTube.git"},
+  "engines": {"node": ">=22.12.0"},
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.mjs",
+    "test:desktop": "node scripts/desktop-test.mjs",
+    "check": "node scripts/check.mjs",
+    "serve": "python3 -m http.server 8787 --directory extension",
+    "package": "python3 scripts/package.py",
+    "package:store": "python3 scripts/package.py --store",
+    "desktop:dir": "electron-builder --dir --publish never",
+    "desktop:dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "electron": "45.2.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "io.github.cq0206.hackertube",
+    "productName": "HackerTube",
+    "artifactName": "HackerTube-${version}-${os}-${arch}.${ext}",
+    "asar": true,
+    "directories": {"output": "dist", "buildResources": "desktop/assets"},
+    "files": ["desktop/**/*.mjs", "desktop/**/*.cjs", "desktop/assets/**", "extension/**", "LICENSE", "THIRD_PARTY_NOTICES.md", "package.json"],
+    "mac": {"target": ["dmg", "zip"], "category": "public.app-category.entertainment", "identity": null, "icon": "desktop/assets/icon.icns", "darkModeSupport": true},
+    "win": {"target": ["nsis", "zip"], "icon": "desktop/assets/icon.ico"},
+    "nsis": {"oneClick": false, "allowToChangeInstallationDirectory": true, "perMachine": false},
+    "linux": {"target": ["AppImage", "deb"], "category": "AudioVideo", "icon": "desktop/assets/icon.png", "maintainer": "HackerTube contributors <cq0206@users.noreply.github.com>"}
+  }
+}

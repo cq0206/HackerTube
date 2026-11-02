@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "HackerTube · 值得花时间的视频",
+  "version": "1.1.0",
+  "description": "从 Hacker News 反复推荐的视频里，发现值得看的内容。本地搜索、收藏和推荐，免登录。",
+  "permissions": ["storage"],
+  "host_permissions": ["https://hackertube.org/*"],
+  "background": {"service_worker": "background.js"},
+  "action": {"default_title": "打开 HackerTube", "default_icon": {"16": "icons/16.png", "32": "icons/32.png"}},
+  "icons": {"16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png"},
+  "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self' https://hackertube.org; img-src 'self' https://i.ytimg.com data:; style-src 'self'; base-uri 'none'; form-action 'none'"}
+}

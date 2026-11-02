@@ -1,0 +1,81 @@
+name: Desktop release
+on:
+  push:
+    tags: ['desktop-v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: mac
+            args: --mac --arm64 --x64
+          - os: windows-latest
+            target: win
+            args: --win --x64
+          - os: ubuntu-latest
+            target: linux
+            args: --linux --x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Verify release version
+        shell: bash
+        run: |
+          node --input-type=module -e 'import fs from "node:fs";const v=JSON.parse(fs.readFileSync("package.json")).version;if(process.env.GITHUB_REF_NAME!=="desktop-v"+v)throw Error("Tag must match package.json")'
+      - run: npm run check
+      - run: npm test
+      - name: Desktop integration test
+        if: runner.os == 'macOS'
+        run: npm run test:desktop
+      - name: Build installers
+        run: npm run desktop:dist -- ${{ matrix.args }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Build Chrome ZIP
+        if: runner.os == 'Linux'
+        run: python3 scripts/package.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.target }}
+          if-no-files-found: error
+          path: |
+            dist/*.dmg
+            dist/*.zip
+            dist/*.exe
+            dist/*.AppImage
+            dist/*.deb
+            artifacts/hackertube-chrome-*.zip
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: installers-*
+          merge-multiple: true
+          path: release
+      - name: Publish release assets and checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          mkdir -p upload
+          find release -type f -exec cp {} upload/ \;
+          cd upload
+          sha256sum * > SHA256SUMS
+          if ! gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "HackerTube Desktop ${GITHUB_REF_NAME#desktop-v}" --notes "Open-source desktop cinema. Unsigned builds; see README for platform and installation details."
+          fi
+          gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" ./* --clobber
